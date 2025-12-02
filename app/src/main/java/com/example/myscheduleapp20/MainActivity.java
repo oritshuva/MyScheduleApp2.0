@@ -19,13 +19,13 @@ public class MainActivity extends AppCompatActivity {   // ההגדרה של מ�
         btnSignUp = findViewById(R.id.btnSignUp);   // מחפש את הכפתור עם id=btnSignUp
 
         // מה קורה כשמשתמש לוחץ על "התחברות"
-//        btnLogin.setOnClickListener(v -> {          // מאזין ללחיצה על כפתור ההתחברות
-//            Intent intent = new Intent(             // יוצר Intent – בקשה לפתוח מסך חדש
-//                    MainActivity.this,              // מאיזה מסך יוצאים (המסך הנוכחי)
-//                    LoginActivity.class             // לאיזה מסך נכנסים (LoginActivity)
-//            );
-//            startActivity(intent);                  // מפעיל את המסך החדש
-//        });
+        btnLogin.setOnClickListener(v -> {          // מאזין ללחיצה על כפתור ההתחברות
+            Intent intent = new Intent(             // יוצר Intent – בקשה לפתוח מסך חדש
+                    MainActivity.this,              // מאיזה מסך יוצאים (המסך הנוכחי)
+                    LoginActivity.class             // לאיזה מסך נכנסים (LoginActivity)
+            );
+            startActivity(intent);                  // מפעיל את המסך החדש
+        });
 
         // מה קורה כשמשתמש לוחץ על "הרשמה"
 //        btnSignUp.setOnClickListener(v -> {         // מאזין ללחיצה על כפתור ההרשמה
