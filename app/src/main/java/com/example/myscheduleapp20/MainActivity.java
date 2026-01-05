@@ -1,4 +1,6 @@
 package com.example.myscheduleapp20;
+import static androidx.core.content.ContextCompat.startActivity;
+
 import androidx.appcompat.app.AppCompatActivity;    // מחלקת בסיס לכל Activity בסגנון AppCompat
 import android.content.Intent;                      // מחלקה שמאפשרת מעבר בין Activities
 import android.os.Bundle;                           // מעביר מידע ל-onCreate (מצב קודם וכו')
@@ -28,12 +30,12 @@ public class MainActivity extends AppCompatActivity {   // ההגדרה של מ�
         });
 
         // מה קורה כשמשתמש לוחץ על "הרשמה"
-//        btnSignUp.setOnClickListener(v -> {         // מאזין ללחיצה על כפתור ההרשמה
-//            Intent intent = new Intent(             // Intent חדש למסך ההרשמה
-//                    MainActivity.this,              // המסך הנוכחי
-//                    SignUpActivity.class            // ה-Activity של מסך ההרשמה
-//            );
-//            startActivity(intent);                  // מפעיל את SignUpActivity
-//        });
+        btnSignUp.setOnClickListener(v -> {         // מאזין ללחיצה על כפתור ההרשמה
+            Intent intent = new Intent(             // Intent חדש למסך ההרשמה
+                    MainActivity.this,              // המסך הנוכחי
+                    SignUpActivity.class            // ה-Activity של מסך ההרשמה
+            );
+            startActivity(intent);                  // מפעיל את SignUpActivity
+        });
     }
 }

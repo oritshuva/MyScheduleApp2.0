@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.myscheduleapp20" />
+                  <option name="mobileSdkAppId" value="1:525130234288:android:2c26ebe1eb2f48cfb2fe75" />
+                  <option name="projectId" value="myscheduleapp20" />
+                  <option name="projectNumber" value="525130234288" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
