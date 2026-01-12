@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;           // בסיס לכל Ac
 import android.os.Bundle;                                  // מעביר מצב ל-onCreate
 import android.text.Editable;                              // מייצג טקסט שניתן לעריכה (בשביל TextWatcher)
 import android.text.TextWatcher;                           // מאזין לשינויים בטקסט בשדות
+import android.util.Log;
 import android.widget.Button;                              // כפתורים
 import android.widget.EditText;                            // שדות טקסט
 import android.widget.Toast;                               // הודעות קצרות קופצות על המסך
@@ -13,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {     // הגדרת מסך 
     private EditText etEmail;                              // שדה האימייל
     private EditText etPassword;                           // שדה הסיסמה
     private Button btnLoginConfirm;                        // כפתור "התחבר"
-    private Button btnBack;                                // כפתור "חזרה"
+    private Button btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {   // נקודת כניסה למסך
