@@ -7,7 +7,11 @@ import android.text.TextWatcher;                           // מאזין לשי�
 import android.util.Log;
 import android.widget.Button;                              // כפתורים
 import android.widget.EditText;                            // שדות טקסט
-import android.widget.Toast;                               // הודעות קצרות קופצות על המסך
+import android.widget.Toast;
+import com.google.firebase.auth.FirebaseAuth;          // Firebase Auth
+import android.content.Intent;                         // מעבר למסך אחר
+
+// הודעות קצרות קופצות על המסך
 
 public class LoginActivity extends AppCompatActivity {     // הגדרת מסך ההתחברות
 
@@ -15,11 +19,15 @@ public class LoginActivity extends AppCompatActivity {     // הגדרת מסך 
     private EditText etPassword;                           // שדה הסיסמה
     private Button btnLoginConfirm;                        // כפתור "התחבר"
     private Button btnBack;
+    private FirebaseAuth auth;                             // אובייקט התחברות
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {   // נקודת כניסה למסך
         super.onCreate(savedInstanceState);                // מפעיל את onCreate של האב
-        setContentView(R.layout.activity_login);           // מחבר את המסך ל-activity_login.xml
+        setContentView(R.layout.activity_login);
+        auth = FirebaseAuth.getInstance();                     // מקבל מופע של FirebaseAuth
+// מחבר את המסך ל-activity_login.xml
 
         // קישור רכיבי ה-XML למשתנים בקוד:
         etEmail = findViewById(R.id.etEmail);              // מוצא את EditText של האימייל
@@ -70,11 +78,23 @@ public class LoginActivity extends AppCompatActivity {     // הגדרת מסך 
 
             // כאן בעתיד נוסיף התחברות אמיתית ל-Firebase / שרת.
             // כרגע רק מציגים הודעה להוכחת עבודה:
-            Toast.makeText(
-                    LoginActivity.this,                   // הקונטקסט – המסך הזה
-                    "התחברות עם " + email,               // הטקסט שיופיע בהודעה
-                    Toast.LENGTH_SHORT                    // אורך התצוגה
-            ).show();
+            validateInputs();                                     // בודק שוב תקינות
+            if (!btnLoginConfirm.isEnabled()) return;             // אם לא תקין – לא שולח לפיירבייס
+
+            auth.signInWithEmailAndPassword(email, password)      // ניסיון התחברות עם אימייל+סיסמה
+                    .addOnCompleteListener(task -> {              // מה לעשות כשהפעולה מסתיימת
+                        if (task.isSuccessful()) {                // אם התחבר בהצלחה
+                            Toast.makeText(this, "התחברת ✅", Toast.LENGTH_SHORT).show(); // הודעה
+                            startActivity(new Intent(LoginActivity.this, ScheduleActivity.class));
+                            finish();                             // סוגר Login
+                        } else {                                  // אם נכשל
+                            String msg = (task.getException() != null)
+                                    ? task.getException().getMessage()
+                                    : "שגיאה בהתחברות";
+                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); // מציג שגיאה
+                        }
+                    });
+
         });
 
         // מה קורה כשמשתמש לוחץ על "חזרה":

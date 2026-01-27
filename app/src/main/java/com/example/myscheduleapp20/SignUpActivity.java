@@ -1,8 +1,10 @@
 package com.example.myscheduleapp20;                       // אותה חבילה כמו MainActivity
 
+import android.content.Intent;
 import android.os.Bundle; // מאפשר לקבל מצב בעת פתיחת Activity
 import android.text.Editable; // טיפוס שמשמש את TextWatcher
 import android.text.TextWatcher; // מאזין לשינויים בשדות טקסט
+import android.util.Log;
 import android.util.Patterns; // תבניות מוכנות (כמו אימייל)
 import android.view.View; // שליטה בנראות רכיבים
 import android.widget.ProgressBar; // אינדיקציית טעינה
@@ -97,14 +99,17 @@ public class SignUpActivity extends AppCompatActivity { // Activity של ההר�
                     setLoading(false); // חזרה למצב רגיל
 
                     if (task.isSuccessful()) { // אם נרשם בהצלחה
+                        Log.d("Tag","succses" + auth.getCurrentUser().getUid());
                         Toast.makeText(this, "נרשמת בהצלחה ✅ עכשיו אפשר להתחבר", Toast.LENGTH_SHORT).show(); // הודעה
-                        finish(); // חזרה למסך Login
+                        startActivity(new Intent(SignUpActivity.this, ScheduleActivity.class));
                     } else { // אם נכשל
                         String msg = (task.getException() != null) // אם יש פירוט שגיאה
                                 ? task.getException().getMessage() // הטקסט של השגיאה
                                 : "שגיאה בהרשמה"; // fallback
                         Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); // הצגת השגיאה
+                        Log.e("Tag","failed" + msg);
                     }
+
                 });
     }
 

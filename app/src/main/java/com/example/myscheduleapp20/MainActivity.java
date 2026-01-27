@@ -1,10 +1,10 @@
 package com.example.myscheduleapp20;
-import static androidx.core.content.ContextCompat.startActivity;
 
 import androidx.appcompat.app.AppCompatActivity;    // מחלקת בסיס לכל Activity בסגנון AppCompat
 import android.content.Intent;                      // מחלקה שמאפשרת מעבר בין Activities
 import android.os.Bundle;                           // מעביר מידע ל-onCreate (מצב קודם וכו')
 import android.widget.Button;                       // מחלקה לכפתורים
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {   // ההגדרה של מסך הראשי (Activity)
 
@@ -37,5 +37,17 @@ public class MainActivity extends AppCompatActivity {   // ההגדרה של מ�
             );
             startActivity(intent);                  // מפעיל את SignUpActivity
         });
+
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // אם כבר מחובר – מדלגים על מסך הכניסה ועוברים ללוח שעות
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            startActivity(new Intent(MainActivity.this, ScheduleActivity.class));
+            finish();
+        }
+    }
+
 }
