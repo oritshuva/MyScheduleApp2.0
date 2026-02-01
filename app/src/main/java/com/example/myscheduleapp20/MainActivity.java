@@ -3,6 +3,7 @@ package com.example.myscheduleapp20;
 import androidx.appcompat.app.AppCompatActivity;    // מחלקת בסיס לכל Activity בסגנון AppCompat
 import android.content.Intent;                      // מחלקה שמאפשרת מעבר בין Activities
 import android.os.Bundle;                           // מעביר מידע ל-onCreate (מצב קודם וכו')
+import android.util.Log;
 import android.widget.Button;                       // מחלקה לכפתורים
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -15,6 +16,7 @@ public class MainActivity extends AppCompatActivity {   // ההגדרה של מ�
     protected void onCreate(Bundle savedInstanceState) {  // פונקציה שרצה כשהמסך נטען
         super.onCreate(savedInstanceState);         // קריאה ללוגיקה הבסיסית של ה-Activity
         setContentView(R.layout.activity_main);     // מחבר את המסך לקובץ ה-XML שלנו (activity_main.xml)
+
 
         // קישור בין הכפתורים ב-XML לבין המשתנים בקוד
         btnLogin = findViewById(R.id.btnLogin);     // מחפש את הכפתור עם id=btnLogin בקובץ ה-XML
