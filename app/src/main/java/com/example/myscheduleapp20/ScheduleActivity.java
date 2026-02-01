@@ -28,7 +28,7 @@ public class ScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_schedule);
 
         Button btnLogout = findViewById(R.id.btnLogout);
-        Button btnAddItem = findViewById(R.id.btnAddItemx);
+        Button btnAddItem = findViewById(R.id.btnAddItem);
         RecyclerView recyclerSchedule = findViewById(R.id.recyclerSchedule);
 
         // הגדרת הרשימה
