@@ -4,10 +4,12 @@ public class ScheduleItem {
 
     private final String title;
     private final String time;
+    private final String details;
 
-    public ScheduleItem(String title, String time) {
+    public ScheduleItem(String title, String time, String details) {
         this.title = title;
         this.time = time;
+        this.details = details;
     }
 
     public String getTitle() {
@@ -16,5 +18,9 @@ public class ScheduleItem {
 
     public String getTime() {
         return time;
+    }
+
+    public String getDetails() {
+        return details;
     }
 }

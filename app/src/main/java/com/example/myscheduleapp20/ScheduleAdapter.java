@@ -4,6 +4,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.content.Intent;
+
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +33,14 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         ScheduleItem item = items.get(position);
         holder.txtTitle.setText(item.getTitle());
         holder.txtTime.setText(item.getTime());
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(v.getContext(), TaskDetailsActivity.class);
+            intent.putExtra("title", item.getTitle());
+            intent.putExtra("time", item.getTime());
+            intent.putExtra("details", item.getDetails());
+            v.getContext().startActivity(intent);
+        });
+
     }
 
     @Override

@@ -17,23 +17,26 @@ public class AddScheduleItemActivity extends AppCompatActivity {
 
         EditText edtTitle = findViewById(R.id.edtTitle);
         EditText edtTime = findViewById(R.id.edtTime);
+        EditText edtDetails = findViewById(R.id.edtDetails);
         Button btnSave = findViewById(R.id.btnSave);
 
         btnSave.setOnClickListener(v -> {
             String title = edtTitle.getText().toString().trim();
             String time = edtTime.getText().toString().trim();
+            String details = edtDetails.getText().toString().trim();
 
             if (title.isEmpty() || time.isEmpty()) {
-                Toast.makeText(this, "מלא כותרת ושעה", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "יש למלא כותרת ושעה", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             Intent result = new Intent();
             result.putExtra("title", title);
             result.putExtra("time", time);
-            setResult(RESULT_OK, result);
+            result.putExtra("details", details);
 
-            finish();
+            setResult(RESULT_OK, result);
+            finish(); // חוזר למסך הלוז
         });
     }
 }

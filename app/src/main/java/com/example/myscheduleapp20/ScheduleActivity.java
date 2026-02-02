@@ -31,6 +31,7 @@ public class ScheduleActivity extends AppCompatActivity {
         Button btnAddItem = findViewById(R.id.btnAddItem);
         RecyclerView recyclerSchedule = findViewById(R.id.recyclerSchedule);
 
+
         // הגדרת הרשימה
         adapter = new ScheduleAdapter(items);
         recyclerSchedule.setLayoutManager(new LinearLayoutManager(this));
@@ -50,9 +51,11 @@ public class ScheduleActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         String title = result.getData().getStringExtra("title");
                         String time = result.getData().getStringExtra("time");
+                        String details = result.getData().getStringExtra("details");
+
 
                         if (title != null && !title.trim().isEmpty() && time != null && !time.trim().isEmpty()) {
-                            items.add(new ScheduleItem(title, time));
+                            items.add(new ScheduleItem(title, time, details));
                             adapter.notifyItemInserted(items.size() - 1);
                         }
                     }
