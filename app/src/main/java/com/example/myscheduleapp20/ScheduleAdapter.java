@@ -1,11 +1,10 @@
 package com.example.myscheduleapp20;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.content.Intent;
-
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,16 +30,26 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ScheduleItem item = items.get(position);
-        holder.txtTitle.setText(item.getTitle());
-        holder.txtTime.setText(item.getTime());
+
+        String title = item.getTitle() != null ? item.getTitle() : "";
+        String time = item.getTime() != null ? item.getTime() : "";
+        String details = item.getDetails() != null ? item.getDetails() : "";
+
+        holder.txtTitle.setText(title);
+        holder.txtTime.setText(time);
+
+        // ✅ חסין: אם txtDetails לא קיים ב-XML, לא נוגעים בו
+        if (holder.txtDetails != null) {
+            holder.txtDetails.setText(details);
+        }
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), TaskDetailsActivity.class);
-            intent.putExtra("title", item.getTitle());
-            intent.putExtra("time", item.getTime());
-            intent.putExtra("details", item.getDetails());
+            intent.putExtra("title", title);
+            intent.putExtra("time", time);
+            intent.putExtra("details", details);
             v.getContext().startActivity(intent);
         });
-
     }
 
     @Override
@@ -50,11 +59,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView txtTitle, txtTime;
+        TextView txtDetails; // יכול להיות null אם לא קיים ב-XML
 
         ViewHolder(View itemView) {
             super(itemView);
             txtTitle = itemView.findViewById(R.id.txtTitle);
             txtTime = itemView.findViewById(R.id.txtTime);
+            txtDetails = itemView.findViewById(R.id.txtDetails); // אם אין - יחזור null וזה בסדר
         }
     }
 }
