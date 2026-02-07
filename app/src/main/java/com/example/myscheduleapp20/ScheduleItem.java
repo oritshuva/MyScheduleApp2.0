@@ -2,33 +2,23 @@ package com.example.myscheduleapp20;
 
 public class ScheduleItem {
 
+    private final String id;          // Firestore docId
     private final String title;
-    private final String time;
+    private final String displayTime; // לתצוגה: "dd/MM/yyyy HH:mm"
     private final String details;
+    private final long time;          // number: millis (למיון/תזכורות)
 
-    // בנאי חדש – עם פירוט
-    public ScheduleItem(String title, String time, String details) {
+    public ScheduleItem(String id, String title, String displayTime, String details, long time) {
+        this.id = id;
         this.title = title;
-        this.time = time;
+        this.displayTime = displayTime;
         this.details = details;
-    }
-
-    // בנאי ישן – תאימות לאחור
-    public ScheduleItem(String title, String time) {
-        this.title = title;
         this.time = time;
-        this.details = "";
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public String getDetails() {
-        return details;
-    }
+    public String getId() { return id; }
+    public String getTitle() { return title; }
+    public String getDisplayTime() { return displayTime; }
+    public String getDetails() { return details; }
+    public long getTime() { return time; }
 }

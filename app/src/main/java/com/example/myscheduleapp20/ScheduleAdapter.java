@@ -1,6 +1,5 @@
 package com.example.myscheduleapp20;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,61 +10,60 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
+public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
+
+    public interface OnItemActionListener {
+        void onClick(ScheduleItem item);
+        void onLongClick(ScheduleItem item);
+    }
 
     private final List<ScheduleItem> items;
+    private final OnItemActionListener listener;
 
-    public ScheduleAdapter(List<ScheduleItem> items) {
+    public ScheduleAdapter(List<ScheduleItem> items, OnItemActionListener listener) {
         this.items = items;
+        this.listener = listener;
+    }
+
+    static class VH extends RecyclerView.ViewHolder {
+        TextView txtTitle, txtTime, txtDetails;
+
+        VH(@NonNull View itemView) {
+            super(itemView);
+            txtTitle = itemView.findViewById(R.id.txtTitle);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtDetails = itemView.findViewById(R.id.txtDetails);
+        }
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_schedule, parent, false);
-        return new ViewHolder(view);
+        return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
         ScheduleItem item = items.get(position);
 
-        String title = item.getTitle() != null ? item.getTitle() : "";
-        String time = item.getTime() != null ? item.getTime() : "";
-        String details = item.getDetails() != null ? item.getDetails() : "";
-
-        holder.txtTitle.setText(title);
-        holder.txtTime.setText(time);
-
-        // ✅ חסין: אם txtDetails לא קיים ב-XML, לא נוגעים בו
-        if (holder.txtDetails != null) {
-            holder.txtDetails.setText(details);
-        }
+        holder.txtTitle.setText(item.getTitle());
+        holder.txtTime.setText(item.getDisplayTime());
+        holder.txtDetails.setText(item.getDetails());
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), TaskDetailsActivity.class);
-            intent.putExtra("title", title);
-            intent.putExtra("time", time);
-            intent.putExtra("details", details);
-            v.getContext().startActivity(intent);
+            if (listener != null) listener.onClick(item);
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener != null) listener.onLongClick(item);
+            return true;
         });
     }
 
     @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtTime;
-        TextView txtDetails; // יכול להיות null אם לא קיים ב-XML
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtTime = itemView.findViewById(R.id.txtTime);
-            txtDetails = itemView.findViewById(R.id.txtDetails); // אם אין - יחזור null וזה בסדר
-        }
     }
 }

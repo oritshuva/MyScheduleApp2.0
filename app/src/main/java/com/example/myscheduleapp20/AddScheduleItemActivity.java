@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -19,6 +20,12 @@ public class AddScheduleItemActivity extends AppCompatActivity {
     private final Calendar selected = Calendar.getInstance();
     private boolean datePicked = false;
     private boolean timePicked = false;
+
+    private String docId = null;
+
+    private static String formatDisplayTime(long millis) {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(millis);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +41,39 @@ public class AddScheduleItemActivity extends AppCompatActivity {
         TextView txtChosenTime = findViewById(R.id.txtChosenTime);
 
         Button btnSave = findViewById(R.id.btnSave);
+
+        // מצב עריכה: מילוי נתונים מה-intent
+        Intent in = getIntent();
+        if (in != null) {
+            docId = in.getStringExtra("docId");
+            String t = in.getStringExtra("title");
+            String d = in.getStringExtra("details");
+            long time = in.getLongExtra("triggerAtMillis", -1);
+
+            if (t != null) edtTitle.setText(t);
+            if (d != null) edtDetails.setText(d);
+
+            if (docId != null && !docId.isEmpty()) {
+                btnSave.setText("עדכן");
+            }
+
+            if (time > 0) {
+                selected.setTimeInMillis(time);
+                datePicked = true;
+                timePicked = true;
+
+                txtChosenDate.setText(String.format(Locale.getDefault(),
+                        "תאריך: %02d/%02d/%04d",
+                        selected.get(Calendar.DAY_OF_MONTH),
+                        (selected.get(Calendar.MONTH) + 1),
+                        selected.get(Calendar.YEAR)));
+
+                txtChosenTime.setText(String.format(Locale.getDefault(),
+                        "שעה: %02d:%02d",
+                        selected.get(Calendar.HOUR_OF_DAY),
+                        selected.get(Calendar.MINUTE)));
+            }
+        }
 
         btnPickDate.setOnClickListener(v -> {
             Calendar now = Calendar.getInstance();
@@ -92,19 +132,11 @@ public class AddScheduleItemActivity extends AppCompatActivity {
             }
 
             Intent result = new Intent();
+            if (docId != null && !docId.isEmpty()) result.putExtra("docId", docId);
             result.putExtra("title", title);
             result.putExtra("details", details);
             result.putExtra("triggerAtMillis", triggerAtMillis);
-
-            // לתצוגה בלוז (מחרוזת נוחה)
-            String displayTime = String.format(Locale.getDefault(),
-                    "%02d/%02d/%04d %02d:%02d",
-                    selected.get(Calendar.DAY_OF_MONTH),
-                    (selected.get(Calendar.MONTH) + 1),
-                    selected.get(Calendar.YEAR),
-                    selected.get(Calendar.HOUR_OF_DAY),
-                    selected.get(Calendar.MINUTE));
-            result.putExtra("displayTime", displayTime);
+            result.putExtra("displayTime", formatDisplayTime(triggerAtMillis));
 
             setResult(RESULT_OK, result);
             finish();
