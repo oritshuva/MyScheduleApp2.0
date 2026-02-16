@@ -25,38 +25,26 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
         this.listener = listener;
     }
 
-    static class VH extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtTime, txtDetails;
-
-        VH(@NonNull View itemView) {
-            super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtTime = itemView.findViewById(R.id.txtTime);
-            txtDetails = itemView.findViewById(R.id.txtDetails);
-        }
-    }
-
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_schedule, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_schedule, parent, false);
         return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int position) {
+    public void onBindViewHolder(@NonNull VH h, int position) {
         ScheduleItem item = items.get(position);
 
-        holder.txtTitle.setText(item.getTitle());
-        holder.txtTime.setText(item.getDisplayTime());
-        holder.txtDetails.setText(item.getDetails());
+        h.txtTitle.setText(item.getTitle());
+        h.txtTime.setText(item.getDisplayTime());
+        h.txtDetails.setText(item.getDetails());
 
-        holder.itemView.setOnClickListener(v -> {
+        h.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onClick(item);
         });
 
-        holder.itemView.setOnLongClickListener(v -> {
+        h.itemView.setOnLongClickListener(v -> {
             if (listener != null) listener.onLongClick(item);
             return true;
         });
@@ -65,5 +53,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    static class VH extends RecyclerView.ViewHolder  {
+        TextView txtTitle, txtTime, txtDetails;
+
+        VH(@NonNull View itemView) {
+            super(itemView);
+            txtTitle = itemView.findViewById(R.id.txtTitle);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtDetails = itemView.findViewById(R.id.txtDetails);
+        }
     }
 }

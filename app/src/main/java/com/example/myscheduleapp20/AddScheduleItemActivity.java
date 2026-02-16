@@ -1,9 +1,14 @@
 package com.example.myscheduleapp20;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -131,6 +136,9 @@ public class AddScheduleItemActivity extends AppCompatActivity {
                 return;
             }
 
+            // קריאה לפונקציית זימון ההתראה
+            scheduleNotification(title, details, triggerAtMillis);
+
             Intent result = new Intent();
             if (docId != null && !docId.isEmpty()) result.putExtra("docId", docId);
             result.putExtra("title", title);
@@ -139,7 +147,40 @@ public class AddScheduleItemActivity extends AppCompatActivity {
             result.putExtra("displayTime", formatDisplayTime(triggerAtMillis));
 
             setResult(RESULT_OK, result);
+            Toast.makeText(this, "המשימה נשמרה והתראה הוגדרה!", Toast.LENGTH_LONG).show();
             finish();
         });
+    }
+
+    private void scheduleNotification(String title, String details, long timeInMillis) {
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        intent.putExtra("title", title);
+        intent.putExtra("details", details);
+
+        // מזהה ייחודי להתראה (כדי שנוכל לקבוע כמה התראות במקביל)
+        int notifId = (int) (timeInMillis / 1000);
+        intent.putExtra("notifId", notifId);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                this,
+                notifId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            // בדיקת הרשאה לאנדרואיד 12 ומעלה עבור התראות מדויקות
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    Intent i = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                    startActivity(i);
+                    return;
+                }
+            }
+
+            // קביעת ההתראה לזמן המדויק
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent);
+        }
     }
 }

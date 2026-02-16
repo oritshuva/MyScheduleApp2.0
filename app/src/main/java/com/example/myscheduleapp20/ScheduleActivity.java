@@ -1,6 +1,11 @@
 package com.example.myscheduleapp20;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
@@ -9,6 +14,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,6 +57,8 @@ public class ScheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
+        ensureNotificationPermission();
+
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
@@ -80,6 +89,9 @@ public class ScheduleActivity extends AppCompatActivity {
         recyclerSchedule.setAdapter(adapter);
 
         btnLogout.setOnClickListener(v -> {
+            // חשוב: לעצור listener לפני שיוצאים
+            detachTasksListener();
+
             auth.signOut();
             goToMainAndFinish();
         });
@@ -89,45 +101,92 @@ public class ScheduleActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() != RESULT_OK || result.getData() == null) return;
 
-                    String docId = safeStr(result.getData().getStringExtra("docId"));
-                    String title = safeStr(result.getData().getStringExtra("title"));
-                    String details = safeStr(result.getData().getStringExtra("details"));
-                    String displayTime = safeStr(result.getData().getStringExtra("displayTime"));
-                    long triggerAtMillis = result.getData().getLongExtra("triggerAtMillis", -1);
+                    Intent data = result.getData();
+
+                    String docId = safeStr(data.getStringExtra("docId")); // ריק = חדש
+                    String title = safeStr(data.getStringExtra("title"));
+                    String details = safeStr(data.getStringExtra("details"));
+                    long triggerAtMillis = data.getLongExtra("triggerAtMillis", -1);
 
                     if (title.trim().isEmpty() || triggerAtMillis <= 0) {
                         Toast.makeText(this, "נתונים לא תקינים", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    Map<String, Object> task = new HashMap<>();
-                    task.put("title", title);
-                    task.put("details", details);
-                    task.put("displayTime", displayTime);
-                    task.put("time", triggerAtMillis); // number (Long)
+                    String displayTime = formatDisplayTime(triggerAtMillis);
 
                     boolean isEdit = !docId.isEmpty();
 
-                    if (isEdit) {
+                    if (!isEdit) {
+                        // ---- ADD חדש ----
+                        // יוצרים מראש docId כדי לגזור ממנו alarmId קבוע
+                        String newDocId = db.collection("users").document(uid).collection("tasks").document().getId();
+                        int alarmId = Math.abs(newDocId.hashCode());
+
+                        Map<String, Object> task = new HashMap<>();
+                        task.put("title", title);
+                        task.put("details", details);
+                        task.put("displayTime", displayTime);
+                        task.put("time", triggerAtMillis);   // number
+                        task.put("alarmId", alarmId);        // number
+
+                        db.collection("users")
+                                .document(uid)
+                                .collection("tasks")
+                                .document(newDocId)
+                                .set(task)
+                                .addOnSuccessListener(v -> {
+                                    if (triggerAtMillis > System.currentTimeMillis()) {
+                                        scheduleReminder(triggerAtMillis, title, details, alarmId);
+                                    }
+                                    Toast.makeText(this, "נשמר!", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    e.printStackTrace();
+                                    Toast.makeText(this, "שגיאה בשמירה", Toast.LENGTH_SHORT).show();
+                                });
+
+                    } else {
+                        // ---- EDIT ----
+                        // קוראים alarmId קיים (אם אין, מייצרים קבוע מה docId)
                         db.collection("users")
                                 .document(uid)
                                 .collection("tasks")
                                 .document(docId)
-                                .update(task)
-                                .addOnSuccessListener(v -> Toast.makeText(this, "עודכן!", Toast.LENGTH_SHORT).show())
+                                .get()
+                                .addOnSuccessListener(snapshot -> {
+                                    Long alarmIdLong = snapshot.getLong("alarmId");
+                                    int alarmId = (alarmIdLong != null) ? alarmIdLong.intValue() : Math.abs(docId.hashCode());
+
+                                    // מבטלים התראה קודמת כדי שלא יהיו 2
+                                    cancelReminder(alarmId);
+
+                                    Map<String, Object> task = new HashMap<>();
+                                    task.put("title", title);
+                                    task.put("details", details);
+                                    task.put("displayTime", displayTime);
+                                    task.put("time", triggerAtMillis); // number
+                                    task.put("alarmId", alarmId);      // נשאר אותו הדבר
+
+                                    db.collection("users")
+                                            .document(uid)
+                                            .collection("tasks")
+                                            .document(docId)
+                                            .update(task)
+                                            .addOnSuccessListener(v -> {
+                                                if (triggerAtMillis > System.currentTimeMillis()) {
+                                                    scheduleReminder(triggerAtMillis, title, details, alarmId);
+                                                }
+                                                Toast.makeText(this, "עודכן!", Toast.LENGTH_SHORT).show();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                e.printStackTrace();
+                                                Toast.makeText(this, "שגיאה בעדכון", Toast.LENGTH_SHORT).show();
+                                            });
+                                })
                                 .addOnFailureListener(e -> {
                                     e.printStackTrace();
-                                    Toast.makeText(this, "שגיאה בעדכון", Toast.LENGTH_SHORT).show();
-                                });
-                    } else {
-                        db.collection("users")
-                                .document(uid)
-                                .collection("tasks")
-                                .add(task)
-                                .addOnSuccessListener(docRef -> Toast.makeText(this, "נשמר!", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> {
-                                    e.printStackTrace();
-                                    Toast.makeText(this, "שגיאה בשמירה", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "שגיאה בקריאת משימה לעדכון", Toast.LENGTH_SHORT).show();
                                 });
                     }
                 }
@@ -174,12 +233,15 @@ public class ScheduleActivity extends AppCompatActivity {
                         String details = safeStr(doc.getString("details"));
 
                         Long t = doc.getLong("time");
-                        long time = (t != null) ? t : 0L;
+                        long timeMillis = (t != null) ? t : 0L;
 
                         String displayTime = safeStr(doc.getString("displayTime"));
-                        if (displayTime.isEmpty()) displayTime = formatDisplayTime(time);
+                        if (displayTime.isEmpty()) displayTime = formatDisplayTime(timeMillis);
 
-                        items.add(new ScheduleItem(id, title, displayTime, details, time));
+                        Long alarmIdLong = doc.getLong("alarmId");
+                        int alarmId = (alarmIdLong != null) ? alarmIdLong.intValue() : Math.abs(id.hashCode());
+
+                        items.add(new ScheduleItem(id, title, displayTime, details, timeMillis, alarmId));
                     }
 
                     adapter.notifyDataSetChanged();
@@ -198,7 +260,7 @@ public class ScheduleActivity extends AppCompatActivity {
         intent.putExtra("docId", item.getId());
         intent.putExtra("title", item.getTitle());
         intent.putExtra("details", item.getDetails());
-        intent.putExtra("triggerAtMillis", item.getTime());
+        intent.putExtra("triggerAtMillis", item.getTimeMillis());
         addEditLauncher.launch(intent);
     }
 
@@ -212,6 +274,9 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void deleteTask(ScheduleItem item) {
+        // קודם מבטלים התראה כדי שלא תצא אחרי מחיקה
+        cancelReminder(item.getAlarmId());
+
         db.collection("users")
                 .document(uid)
                 .collection("tasks")
@@ -229,5 +294,54 @@ public class ScheduleActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    // ---- Notifications permission (Android 13+) ----
+    private void ensureNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        1001
+                );
+            }
+        }
+    }
+
+    // ---- Alarm scheduling ----
+    private void scheduleReminder(long triggerAtMillis, String title, String details, int alarmId) {
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (am == null) return;
+
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        intent.putExtra("title", title);
+        intent.putExtra("details", details);
+        intent.putExtra("notifId", alarmId);
+
+        PendingIntent pi = PendingIntent.getBroadcast(
+                this,
+                alarmId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pi);
+    }
+
+    private void cancelReminder(int alarmId) {
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (am == null) return;
+
+        Intent intent = new Intent(this, ReminderReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(
+                this,
+                alarmId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        am.cancel(pi);
     }
 }

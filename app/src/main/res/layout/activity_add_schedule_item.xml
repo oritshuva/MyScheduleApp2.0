@@ -10,13 +10,14 @@
         android:id="@+id/edtTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:minHeight="48dp"
         android:hint="כותרת המשימה"
         android:textSize="16sp"
+        android:padding="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- כפתור בחירת תאריך -->
     <Button
         android:id="@+id/btnPickDate"
         android:layout_width="0dp"
@@ -37,7 +38,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- כפתור בחירת שעה -->
     <Button
         android:id="@+id/btnPickTime"
         android:layout_width="0dp"
