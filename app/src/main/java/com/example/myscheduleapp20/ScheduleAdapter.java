@@ -1,5 +1,6 @@
 package com.example.myscheduleapp20;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,8 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_schedule, parent, false);
+        // שים לב: שיניתי ל-item_task כי זה שם הקובץ שיצרנו לעיצוב השורה
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
         return new VH(v);
     }
 
@@ -39,6 +41,13 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
         h.txtTitle.setText(item.getTitle());
         h.txtTime.setText(item.getDisplayTime());
         h.txtDetails.setText(item.getDetails());
+
+        // לוגיקת העיגול: ירוק אם הזמן עבר, אפור אם לא
+        if (item.isPast()) {
+            h.viewStatusCircle.getBackground().setTint(Color.GREEN);
+        } else {
+            h.viewStatusCircle.getBackground().setTint(Color.GRAY);
+        }
 
         h.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onClick(item);
@@ -57,12 +66,15 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder  {
         TextView txtTitle, txtTime, txtDetails;
+        View viewStatusCircle;
 
         VH(@NonNull View itemView) {
             super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtTime = itemView.findViewById(R.id.txtTime);
-            txtDetails = itemView.findViewById(R.id.txtDetails);
+            // קישור לרכיבים לפי ה-ID שקיים ב-item_task.xml
+            txtTitle = itemView.findViewById(R.id.txtTaskTitle);
+            txtTime = itemView.findViewById(R.id.txtTaskTime);
+            txtDetails = itemView.findViewById(R.id.txtTaskDetails);
+            viewStatusCircle = itemView.findViewById(R.id.viewStatusCircle);
         }
     }
 }

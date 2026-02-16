@@ -2,12 +2,12 @@ package com.example.myscheduleapp20;
 
 public class ScheduleItem {
 
-    private final String id;          // docId ב-Firestore
+    private final String id;
     private final String title;
-    private final String displayTime; // מחרוזת לתצוגה
+    private final String displayTime;
     private final String details;
-    private final long timeMillis;    // מספר (millis) למיון
-    private final int alarmId;        // מספר קבוע לתזכורת
+    private final long timeMillis;
+    private final int alarmId;
 
     public ScheduleItem(String id, String title, String displayTime, String details, long timeMillis, int alarmId) {
         this.id = id;
@@ -24,4 +24,9 @@ public class ScheduleItem {
     public String getDetails() { return details; }
     public long getTimeMillis() { return timeMillis; }
     public int getAlarmId() { return alarmId; }
+
+    // פונקציה חדשה: בודקת אם זמן המשימה כבר עבר
+    public boolean isPast() {
+        return System.currentTimeMillis() > timeMillis;
+    }
 }
