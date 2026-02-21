@@ -3,32 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:layoutDirection="rtl">
 
     <!-- כותרת -->
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text=""
         android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <!-- שעה -->
     <TextView
         android:id="@+id/txtTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text=""
         android:textSize="16sp"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="12dp" />
 
-    <!-- כיתוב -->
+    <!-- כיתוב לשדה פירוט -->
     <TextView
+        android:id="@+id/lblDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="תנמק כאן"
         android:textStyle="bold"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="4dp"
+        android:labelFor="@id/edtDetails" />
 
     <!-- פירוט ניתן לעריכה -->
     <EditText
@@ -36,9 +41,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="top"
+        android:gravity="top|start"
         android:inputType="textMultiLine"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:hint="הכנס פירוט"
+        android:minLines="4"
+        android:importantForAutofill="no" />
 
     <!-- שמירת שינויים -->
     <Button
@@ -46,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:text="שמור שינויים"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp" />
 
     <!-- התנתקות -->
     <Button
@@ -54,6 +62,6 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:text="התנתק"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

@@ -1,55 +1,67 @@
 package com.example.myscheduleapp20;
 
-import androidx.appcompat.app.AppCompatActivity;    // מחלקת בסיס לכל Activity בסגנון AppCompat
-import android.content.Intent;                      // מחלקה שמאפשרת מעבר בין Activities
-import android.os.Bundle;                           // מעביר מידע ל-onCreate (מצב קודם וכו')
-import android.util.Log;
-import android.widget.Button;                       // מחלקה לכפתורים
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity {   // ההגדרה של מסך הראשי (Activity)
+public class MainActivity extends AppCompatActivity {
 
-    private Button btnLogin;                        // משתנה לכפתור "התחברות"
-    private Button btnSignUp;                       // משתנה לכפתור "הרשמה"
+    private EditText edtEmail, edtPassword;
+    private Button btnLogin;
+    private TextView btnRegister;
+    private FirebaseAuth mAuth;
 
-    @Override                                       // מציין שאנחנו מדרסים את onCreate מה-Activity
-    protected void onCreate(Bundle savedInstanceState) {  // פונקציה שרצה כשהמסך נטען
-        super.onCreate(savedInstanceState);         // קריאה ללוגיקה הבסיסית של ה-Activity
-        setContentView(R.layout.activity_main);     // מחבר את המסך לקובץ ה-XML שלנו (activity_main.xml)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
+        mAuth = FirebaseAuth.getInstance();
 
-        // קישור בין הכפתורים ב-XML לבין המשתנים בקוד
-        btnLogin = findViewById(R.id.btnLogin);     // מחפש את הכפתור עם id=btnLogin בקובץ ה-XML
-        btnSignUp = findViewById(R.id.btnSignUp);   // מחפש את הכפתור עם id=btnSignUp
+        // קישור לשדות הקלט (כדי שיוכלו להקליד פרטים)
+        edtEmail = findViewById(R.id.edtEmail);
+        edtPassword = findViewById(R.id.edtPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
 
-        // מה קורה כשמשתמש לוחץ על "התחברות"
-        btnLogin.setOnClickListener(v -> {          // מאזין ללחיצה על כפתור ההתחברות
-            Intent intent = new Intent(             // יוצר Intent – בקשה לפתוח מסך חדש
-                    MainActivity.this,              // מאיזה מסך יוצאים (המסך הנוכחי)
-                    LoginActivity.class             // לאיזה מסך נכנסים (LoginActivity)
-            );
-            startActivity(intent);                  // מפעיל את המסך החדש
+        // כפתור התחברות - מבצע כניסה ישירה
+        btnLogin.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            String pass = edtPassword.getText().toString().trim();
+
+            if (email.isEmpty() || pass.isEmpty()) {
+                Toast.makeText(this, "נא למלא אימייל וסיסמה", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // התחברות ל-Firebase
+            mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // כניסה ישירה למערכת השעות
+                    startActivity(new Intent(MainActivity.this, ScheduleActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(this, "שגיאה: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
 
-        // מה קורה כשמשתמש לוחץ על "הרשמה"
-        btnSignUp.setOnClickListener(v -> {         // מאזין ללחיצה על כפתור ההרשמה
-            Intent intent = new Intent(             // Intent חדש למסך ההרשמה
-                    MainActivity.this,              // המסך הנוכחי
-                    SignUpActivity.class            // ה-Activity של מסך ההרשמה
-            );
-            startActivity(intent);                  // מפעיל את SignUpActivity
+        btnRegister.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, SignUpActivity.class));
         });
-
     }
+
     @Override
     protected void onStart() {
         super.onStart();
-
-        // אם כבר מחובר – מדלגים על מסך הכניסה ועוברים ללוח שעות
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null) {
             startActivity(new Intent(MainActivity.this, ScheduleActivity.class));
             finish();
         }
     }
-
 }

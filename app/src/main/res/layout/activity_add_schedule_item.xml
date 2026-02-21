@@ -1,95 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:fillViewport="true"
+    android:background="@color/background_light">
 
-    <EditText
-        android:id="@+id/edtTitle"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:hint="כותרת המשימה"
-        android:textSize="16sp"
-        android:padding="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:padding="24dp"
+        android:layoutDirection="rtl">
 
-    <Button
-        android:id="@+id/btnPickDate"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="בחר תאריך"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/edtTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- כותרת -->
+        <TextView
+            android:id="@+id/txtHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="הוספת אירוע חדש"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/purple_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/txtChosenDate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="לא נבחר תאריך"
-        android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/btnPickDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- שם משימה -->
+        <EditText
+            android:id="@+id/edtTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="מה המשימה? (למשל: מתמטיקה)"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/txtHeader"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btnPickTime"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:text="בחר שעה"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/txtChosenDate"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- כפתורי תאריך ושעה -->
+        <Button
+            android:id="@+id/btnPickDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="בחר תאריך"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@id/edtTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnPickTime" />
 
-    <TextView
-        android:id="@+id/txtChosenTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="לא נבחרה שעה"
-        android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/btnPickTime"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <Button
+            android:id="@+id/btnPickTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="בחר שעה"
+            app:layout_constraintTop_toTopOf="@id/btnPickDate"
+            app:layout_constraintStart_toEndOf="@id/btnPickDate"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:id="@+id/txtDetailsLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="תנמק כאן"
-        android:textStyle="bold"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/txtChosenTime"
-        app:layout_constraintStart_toStartOf="parent"/>
+        <!-- תצוגת זמן שנבחר -->
+        <TextView
+            android:id="@+id/txtChosenDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="לא נבחר זמן"
+            android:layout_marginTop="8dp"
+            android:textColor="#666666"
+            app:layout_constraintTop_toBottomOf="@id/btnPickDate"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <EditText
-        android:id="@+id/edtDetails"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:hint="פירוט המשימה…"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:textSize="15sp"
-        android:layout_marginTop="6dp"
-        app:layout_constraintTop_toBottomOf="@id/txtDetailsLabel"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- פירוט -->
+        <EditText
+            android:id="@+id/edtDetails"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:hint="הוסף הערה או פירוט כאן..."
+            android:gravity="top"
+            android:padding="12dp"
+            android:background="@android:drawable/editbox_background"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/txtChosenDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:text="שמור"
-        android:textSize="16sp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/edtDetails"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        <!-- כיתוב סוג מערכת -->
+        <TextView
+            android:id="@+id/lblType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="שייך למערכת:"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/edtDetails"
+            app:layout_constraintStart_toStartOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- בחירת סוג -->
+        <RadioGroup
+            android:id="@+id/radioGroupType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/lblType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <RadioButton
+                android:id="@+id/radioNormal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="רגיל"
+                android:checked="true" />
+
+            <RadioButton
+                android:id="@+id/radioAfterSchool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="אחרי בית ספר"
+                android:layout_marginStart="20dp" />
+
+        </RadioGroup>
+
+        <!-- כפתור שמירה -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:text="שמור וקבע התראה"
+            android:backgroundTint="@color/purple_primary"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toBottomOf="@id/radioGroupType"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
