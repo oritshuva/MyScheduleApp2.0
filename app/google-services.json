@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "525130234288",
+    "project_id": "myscheduleapp20",
+    "storage_bucket": "myscheduleapp20.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525130234288:android:2c26ebe1eb2f48cfb2fe75",
+        "android_client_info": {
+          "package_name": "com.example.myscheduleapp20"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk-5f1y6QD6ge0HpyS0amOAmiPW4sys4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
