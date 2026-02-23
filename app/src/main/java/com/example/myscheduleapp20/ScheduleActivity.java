@@ -2,12 +2,16 @@ package com.example.myscheduleapp20;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.example.myscheduleapp20.model.ScheduleItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,7 +67,7 @@ public class ScheduleActivity extends AppCompatActivity {
                 intent.putExtra("details", item.getDetails());
                 intent.putExtra("scheduleType", item.getScheduleType());
                 intent.putExtra("displayTime", item.getDisplayTime());
-                intent.putExtra("triggerAtMillis", item.getTimeMillis()); // אם המסך השני משתמש בזה
+                intent.putExtra("triggerAtMillis", item.getTimeMillis());
                 startActivity(intent);
             }
 
@@ -110,6 +114,28 @@ public class ScheduleActivity extends AppCompatActivity {
         checkAndCreateDefaultSchedule();
     }
 
+    // ===== תפריט עליון (כולל התנתקות) =====
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_schedule, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_logout) {
+            FirebaseAuth.getInstance().signOut();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -150,7 +176,6 @@ public class ScheduleActivity extends AppCompatActivity {
         String uid = mAuth.getUid();
         if (uid == null) return;
 
-        // אם בעתיד תרצה אזעקות אמיתיות - כדאי לשמור כאן זמן אמיתי במילישניות
         long now = System.currentTimeMillis();
         int alarmId = (int) (now % Integer.MAX_VALUE);
 

@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -159,6 +160,7 @@ public class AddScheduleItemActivity extends AppCompatActivity {
             db.collection("tasks").document(uid).collection("userTasks").document(docId)
                     .set(item)
                     .addOnSuccessListener(aVoid -> {
+                        saveTaskToLocalProvider(docId, item); // <-- חדש (שמירה מקומית)
                         scheduleNotification(item);
                         Toast.makeText(this, "עודכן ונקבעה תזכורת", Toast.LENGTH_SHORT).show();
                         finish();
@@ -172,6 +174,7 @@ public class AddScheduleItemActivity extends AppCompatActivity {
                     .add(item)
                     .addOnSuccessListener(ref -> {
                         item.setId(ref.getId());
+                        saveTaskToLocalProvider(ref.getId(), item); // <-- חדש (שמירה מקומית)
                         scheduleNotification(item);
                         Toast.makeText(this, "נשמר ונקבעה תזכורת", Toast.LENGTH_SHORT).show();
                         finish();
@@ -180,6 +183,35 @@ public class AddScheduleItemActivity extends AppCompatActivity {
                         e.printStackTrace();
                         Toast.makeText(this, "שגיאה בשמירה: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     });
+        }
+    }
+
+    // ===== שלב 5ב: פונקציה חדשה לשמירה מקומית דרך ContentProvider =====
+    private void saveTaskToLocalProvider(String firebaseDocId, ScheduleItem item) {
+        try {
+            ContentValues values = new ContentValues();
+            values.put(ScheduleContract.TaskEntry.COLUMN_FIREBASE_DOC_ID, firebaseDocId);
+            values.put(ScheduleContract.TaskEntry.COLUMN_TITLE, item.getTitle());
+            values.put(ScheduleContract.TaskEntry.COLUMN_DISPLAY_TIME, item.getDisplayTime());
+            values.put(ScheduleContract.TaskEntry.COLUMN_DETAILS, item.getDetails());
+            values.put(ScheduleContract.TaskEntry.COLUMN_TIME_MILLIS, item.getTime());
+            values.put(ScheduleContract.TaskEntry.COLUMN_ALARM_ID, item.getAlarmId());
+            values.put(ScheduleContract.TaskEntry.COLUMN_SCHEDULE_TYPE, item.getScheduleType());
+
+            int updated = getContentResolver().update(
+                    ScheduleContract.TaskEntry.CONTENT_URI,
+                    values,
+                    ScheduleContract.TaskEntry.COLUMN_FIREBASE_DOC_ID + "=?",
+                    new String[]{firebaseDocId}
+            );
+
+            if (updated == 0) {
+                getContentResolver().insert(ScheduleContract.TaskEntry.CONTENT_URI, values);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "שגיאה בשמירה מקומית", Toast.LENGTH_SHORT).show();
         }
     }
 

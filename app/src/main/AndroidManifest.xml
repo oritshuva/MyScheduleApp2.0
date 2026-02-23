@@ -25,6 +25,13 @@
 
         <receiver android:name=".ReminderReceiver" android:exported="false" />
 
+        <!-- ContentProvider שלנו לשמירה מקומית -->
+        <provider
+            android:name=".ScheduleContentProvider"
+            android:authorities="com.example.myscheduleapp20.scheduleprovider"
+            android:exported="false" />
+
+        <!-- FileProvider הקיים שלך (לא למחוק) -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -43,5 +50,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 </manifest>
