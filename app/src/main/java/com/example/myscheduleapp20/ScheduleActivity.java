@@ -8,34 +8,22 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuItem;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.myscheduleapp20.model.ScheduleItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private ScheduleAdapter adapter;
-    private final List<ScheduleItem> allItems = new ArrayList<>();
-    private final List<ScheduleItem> filteredList = new ArrayList<>();
-
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    private ListenerRegistration tasksListener;
 
-    private String currentFilter = "רגיל";
+    private ViewPager2 viewPager;
+    private TabLayout tabLayout;
+    private FloatingActionButton fabAddTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,63 +42,33 @@ public class ScheduleActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // RecyclerView
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // ViewPager + Tabs
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+        fabAddTask = findViewById(R.id.fabAddTask);
 
-        adapter = new ScheduleAdapter(filteredList, new ScheduleAdapter.OnItemActionListener() {
-            @Override
-            public void onClick(ScheduleItem item) {
-                Intent intent = new Intent(ScheduleActivity.this, AddScheduleItemActivity.class);
-                intent.putExtra("docId", item.getId());
-                intent.putExtra("title", item.getTitle());
-                intent.putExtra("details", item.getDetails());
-                intent.putExtra("scheduleType", item.getScheduleType());
-                intent.putExtra("displayTime", item.getDisplayTime());
-                intent.putExtra("triggerAtMillis", item.getTimeMillis());
-                startActivity(intent);
+        SchedulePagerAdapter pagerAdapter = new SchedulePagerAdapter(this);
+        viewPager.setAdapter(pagerAdapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText("רגיל");
+            } else {
+                tab.setText("אחרי בית ספר");
             }
+        }).attach();
 
-            @Override
-            public void onLongClick(ScheduleItem item) {
-                String uid = mAuth.getUid();
-                if (uid == null) return;
-
-                db.collection("tasks")
-                        .document(uid)
-                        .collection("userTasks")
-                        .document(item.getId())
-                        .delete()
-                        .addOnFailureListener(e ->
-                                Toast.makeText(ScheduleActivity.this, "מחיקה נכשלה", Toast.LENGTH_SHORT).show()
-                        );
-            }
-        });
-
-        recyclerView.setAdapter(adapter);
-
-        // Tabs
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                currentFilter = (tab.getPosition() == 0) ? "רגיל" : "אחרי בית ספר";
-                filterTasks();
-            }
-
-            @Override public void onTabUnselected(TabLayout.Tab tab) {}
-            @Override public void onTabReselected(TabLayout.Tab tab) {}
-        });
-
-        // FAB (+)
-        FloatingActionButton fabAddTask = findViewById(R.id.fabAddTask);
+        // FAB (+) - פותח מסך הוספה לפי הטאב הנוכחי
         fabAddTask.setOnClickListener(v -> {
             Intent intent = new Intent(ScheduleActivity.this, AddScheduleItemActivity.class);
-            intent.putExtra("scheduleType", currentFilter);
+
+            String currentType = (viewPager.getCurrentItem() == 0) ? "רגיל" : "אחרי בית ספר";
+            intent.putExtra("scheduleType", currentType);
+
             startActivity(intent);
         });
 
-        // יצירת נתוני דמו רק אם אין בכלל משימות
+        // נתוני דמו (רק אם אין בכלל משימות)
         checkAndCreateDefaultSchedule();
     }
 
@@ -134,21 +92,6 @@ public class ScheduleActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        attachTasksListener();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (tasksListener != null) {
-            tasksListener.remove();
-            tasksListener = null;
-        }
     }
 
     private void checkAndCreateDefaultSchedule() {
@@ -179,69 +122,13 @@ public class ScheduleActivity extends AppCompatActivity {
         long now = System.currentTimeMillis();
         int alarmId = (int) (now % Integer.MAX_VALUE);
 
-        ScheduleItem item = new ScheduleItem(title, timeStr, details, now, alarmId, type);
+        // שים לב: אם ScheduleItem אצלך נמצא ב-package אחר (model), עדכן את השורה הזאת
+        com.example.myscheduleapp20.model.ScheduleItem item =
+                new com.example.myscheduleapp20.model.ScheduleItem(title, timeStr, details, now, alarmId, type);
 
         db.collection("tasks")
                 .document(uid)
                 .collection("userTasks")
                 .add(item);
-    }
-
-    private void attachTasksListener() {
-        String uid = mAuth.getUid();
-        if (uid == null) return;
-
-        if (tasksListener != null) {
-            tasksListener.remove();
-            tasksListener = null;
-        }
-
-        tasksListener = db.collection("tasks")
-                .document(uid)
-                .collection("userTasks")
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Toast.makeText(this, "שגיאה בטעינת נתונים", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (value == null) return;
-
-                    allItems.clear();
-
-                    for (QueryDocumentSnapshot doc : value) {
-                        try {
-                            ScheduleItem item = doc.toObject(ScheduleItem.class);
-                            if (item == null) continue;
-
-                            item.setId(doc.getId());
-
-                            if (item.getScheduleType() == null || item.getScheduleType().trim().isEmpty()) {
-                                item.setScheduleType("רגיל");
-                            }
-
-                            allItems.add(item);
-                        } catch (Exception ignored) {
-                            // מדלגים על מסמך לא תקין כדי לא להפיל את כל הרשימה
-                        }
-                    }
-
-                    filterTasks();
-                });
-    }
-
-    private void filterTasks() {
-        filteredList.clear();
-
-        for (ScheduleItem item : allItems) {
-            String type = item.getScheduleType();
-            if (type == null) type = "רגיל";
-
-            if (type.equals(currentFilter)) {
-                filteredList.add(item);
-            }
-        }
-
-        adapter.notifyDataSetChanged();
     }
 }

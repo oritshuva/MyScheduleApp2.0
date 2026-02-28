@@ -6,5 +6,6 @@
         android:id="@+id/action_logout"
         android:title="התנתקות"
         android:icon="@android:drawable/ic_lock_power_off"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
+
 </menu>
