@@ -5,16 +5,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myscheduleapp20.model.Task;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private List<Task> taskList;
+    private final List<Task> taskList;
 
     public TaskAdapter(List<Task> taskList) {
         this.taskList = taskList;
@@ -23,25 +27,31 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_task, parent, false);
         return new TaskViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+
         Task task = taskList.get(position);
+
         holder.txtTitle.setText(task.getTitle());
         holder.txtDetails.setText(task.getDetails());
 
-        // הצגת השעה
-        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault());
-        holder.txtTime.setText(sdf.format(new java.util.Date(task.getTimeInMillis())));
+        SimpleDateFormat sdf =
+                new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-        // צביעת העיגול: ירוק אם עבר הזמן, אפור אם לא
+        holder.txtTime.setText(
+                sdf.format(new Date(task.getTimeInMillis()))
+        );
+
+        // במקום עיגול – נשנה צבע כותרת אם עבר הזמן
         if (task.isPast()) {
-            holder.viewStatus.getBackground().setTint(Color.GREEN);
+            holder.txtTitle.setTextColor(Color.GREEN);
         } else {
-            holder.viewStatus.getBackground().setTint(Color.GRAY);
+            holder.txtTitle.setTextColor(Color.BLACK);
         }
     }
 
@@ -51,15 +61,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
-        TextView txtTitle, txtDetails, txtTime;
-        View viewStatus;
+
+        TextView txtTitle;
+        TextView txtDetails;
+        TextView txtTime;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtTitle = itemView.findViewById(R.id.txtTaskTitle);
-            txtDetails = itemView.findViewById(R.id.txtTaskDetails);
-            txtTime = itemView.findViewById(R.id.txtTaskTime);
-            viewStatus = itemView.findViewById(R.id.viewStatusCircle);
+
+            txtTitle = itemView.findViewById(R.id.txtTitle);
+            txtDetails = itemView.findViewById(R.id.txtDetails);
+            txtTime = itemView.findViewById(R.id.txtTime);
         }
     }
 }

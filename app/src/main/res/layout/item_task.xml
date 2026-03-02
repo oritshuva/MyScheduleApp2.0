@@ -1,86 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="15dp"
-    app:cardElevation="6dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="16dp">
 
-        <View
-            android:id="@+id/viewStatusCircle"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:background="@android:drawable/presence_invisible"
-            android:backgroundTint="#808080" />
-
-        <LinearLayout
-            android:id="@+id/layoutTextContainer"
+        <TextView
+            android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/viewStatusCircle"
-            android:layout_marginStart="15dp"
-            android:layout_toStartOf="@id/layoutButtons"
-            android:orientation="vertical">
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary" />
 
-            <TextView
-                android:id="@+id/txtTaskTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="שם השיעור"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#000000" />
+        <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/purple_primary"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
 
-            <TextView
-                android:id="@+id/txtTaskTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08:00"
-                android:textColor="#666666" />
-
-            <TextView
-                android:id="@+id/txtTaskDetails"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="הערה: אין הערות"
-                android:textSize="14sp"
-                android:textColor="#444444" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutButtons"
+        <ImageButton
+            android:id="@+id/btnShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:orientation="horizontal">
+            android:layout_gravity="end"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="שיתוף"
+            android:padding="8dp"
+            app:srcCompat="@android:drawable/ic_menu_share" />
 
-            <ImageButton
-                android:id="@+id/btnShareTask"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_share"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="הזמן חבר" />
+    </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/btnEditNote"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_edit"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="ערוך הערה" />
-
-        </LinearLayout>
-
-    </RelativeLayout>
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
