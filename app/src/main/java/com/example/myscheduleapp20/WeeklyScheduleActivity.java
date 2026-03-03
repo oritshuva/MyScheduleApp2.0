@@ -1,5 +1,6 @@
 package com.example.myscheduleapp20;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -30,7 +31,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
 
     private MaterialButtonToggleGroup toggleGroup;
     private MaterialButtonToggleGroup dayToggleGroup;
-
     private MaterialButton btnSchool;
 
     private RecyclerView rvWeekly;
@@ -41,11 +41,20 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
     private boolean isSchoolSelected = true;
 
     private WeeklyScheduleStore store;
+    private ScheduleTemplateStore templateStore;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weekly_schedule);
+
+        templateStore = new ScheduleTemplateStore(this);
+
+        if (!templateStore.isTemplateExists()) {
+            startActivity(new Intent(this, TemplateSetupActivity.class));
+            finish();
+            return;
+        }
 
         selectedDay = Calendar.getInstance();
         store = new WeeklyScheduleStore(this);
@@ -55,7 +64,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
 
         toggleGroup = findViewById(R.id.toggleGroup);
         dayToggleGroup = findViewById(R.id.dayToggleGroup);
-
         btnSchool = findViewById(R.id.btnSchool);
 
         rvWeekly = findViewById(R.id.rvWeekly);
@@ -69,7 +77,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         rvWeekly.setLayoutManager(new LinearLayoutManager(this));
         rvWeekly.setAdapter(adapter);
 
-        // ברירת מחדל
         toggleGroup.check(btnSchool.getId());
         dayToggleGroup.check(R.id.daySun);
         selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -82,50 +89,39 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
 
         dayToggleGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
             if (!isChecked) return;
-
-            if (checkedId == R.id.daySun) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-
-            } else if (checkedId == R.id.dayMon) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
-            } else if (checkedId == R.id.dayTue) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
-
-            } else if (checkedId == R.id.dayWed) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
-
-            } else if (checkedId == R.id.dayThu) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
-
-            } else if (checkedId == R.id.dayFri) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
-
-            } else if (checkedId == R.id.daySat) {
-                selectedDay.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
-            }
-
+            selectedDay.set(Calendar.DAY_OF_WEEK, getDayFromId(checkedId));
             loadFromStorage();
         });
 
-        fab.setOnClickListener(v -> addNewItem());
+        fab.setOnClickListener(v -> {
+            if (!isSchoolSelected) {
+                addAfterSchoolItem();
+            }
+        });
 
         loadFromStorage();
     }
 
-    private void addNewItem() {
+    private int getDayFromId(int id) {
+        if (id == R.id.daySun) return Calendar.SUNDAY;
+        if (id == R.id.dayMon) return Calendar.MONDAY;
+        if (id == R.id.dayTue) return Calendar.TUESDAY;
+        if (id == R.id.dayWed) return Calendar.WEDNESDAY;
+        if (id == R.id.dayThu) return Calendar.THURSDAY;
+        if (id == R.id.dayFri) return Calendar.FRIDAY;
+        return Calendar.SATURDAY;
+    }
+
+    private void addAfterSchoolItem() {
 
         ScheduleEntry entry = new ScheduleEntry(
-                "id" + System.currentTimeMillis(),
+                "id_" + System.currentTimeMillis(),
                 getDayKey(),
-                isSchoolSelected ?
-                        ScheduleEntry.TYPE_LESSON :
-                        ScheduleEntry.TYPE_TASK,
-                isSchoolSelected ?
-                        "שיעור חדש" :
-                        "משימה חדשה",
+                ScheduleEntry.TYPE_TASK,
+                "משימה חדשה",
                 "",
-                false
+                false,
+                -1
         );
 
         List<ScheduleEntry> all = store.loadAll();
@@ -139,20 +135,54 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
 
         currentItems.clear();
 
+        List<String> periodTimes = templateStore.loadPeriods();
         List<ScheduleEntry> all = store.loadAll();
 
-        for (ScheduleEntry entry : all) {
-            if (entry.dayKey.equals(getDayKey())
-                    && entry.type.equals(
-                    isSchoolSelected ?
-                            ScheduleEntry.TYPE_LESSON :
-                            ScheduleEntry.TYPE_TASK)) {
+        if (isSchoolSelected) {
 
-                currentItems.add(entry);
+            for (int i = 0; i < periodTimes.size(); i++) {
+
+                ScheduleEntry found = null;
+
+                for (ScheduleEntry entry : all) {
+                    if (entry.dayKey.equals(getDayKey())
+                            && entry.type.equals(ScheduleEntry.TYPE_LESSON)
+                            && entry.periodIndex == i) {
+
+                        found = entry;
+                        break;
+                    }
+                }
+
+                if (found != null) {
+                    currentItems.add(found);
+                } else {
+                    currentItems.add(
+                            new ScheduleEntry(
+                                    "slot_" + getDayKey() + "_" + i,
+                                    getDayKey(),
+                                    ScheduleEntry.TYPE_LESSON,
+                                    "",
+                                    periodTimes.get(i),
+                                    false,
+                                    i
+                            )
+                    );
+                }
+            }
+
+        } else {
+
+            for (ScheduleEntry entry : all) {
+                if (entry.dayKey.equals(getDayKey())
+                        && entry.type.equals(ScheduleEntry.TYPE_TASK)) {
+
+                    currentItems.add(entry);
+                }
             }
         }
 
-        adapter.notifyDataChanged();
+        adapter.notifyDataSetChanged();
         updateEmptyState();
         updateTitle();
     }

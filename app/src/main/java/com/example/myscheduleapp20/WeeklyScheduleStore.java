@@ -63,8 +63,15 @@ public class WeeklyScheduleStore {
 
                 JSONObject obj = array.getJSONObject(i);
 
-                ScheduleEntry entry =
-                        new ScheduleEntry();
+                ScheduleEntry entry = new ScheduleEntry(
+                        obj.getString("id"),
+                        obj.getString("dayKey"),
+                        obj.getString("type"),
+                        obj.getString("title"),
+                        obj.getString("details"),
+                        obj.getBoolean("done"),
+                        obj.optInt("periodIndex", -1)
+                );
 
                 entry.id = obj.getString("id");
                 entry.dayKey = obj.getString("dayKey");
