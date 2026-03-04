@@ -2,11 +2,12 @@ package com.example.myscheduleapp20;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -36,7 +37,7 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
     private RecyclerView rvWeekly;
 
     private final ArrayList<ScheduleEntry> currentItems = new ArrayList<>();
-    private SimpleStringAdapter adapter;
+    private PeriodAdapter adapter;   // ✅ שינוי כאן
 
     private boolean isSchoolSelected = true;
 
@@ -69,13 +70,24 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         rvWeekly = findViewById(R.id.rvWeekly);
         FloatingActionButton fab = findViewById(R.id.fabAddWeekly);
 
-        adapter = new SimpleStringAdapter(
-                currentItems,
-                entry -> saveAllData()
-        );
+        // ✅ יצירת ה-Adapter החדש
+        adapter = new PeriodAdapter(currentItems);
 
-        rvWeekly.setLayoutManager(new LinearLayoutManager(this));
+        rvWeekly.setLayoutManager(new GridLayoutManager(this, 2));
         rvWeekly.setAdapter(adapter);
+
+        ImageButton btnPrev = findViewById(R.id.btnPrevDay);
+        ImageButton btnNext = findViewById(R.id.btnNextDay);
+
+        btnPrev.setOnClickListener(v -> {
+            selectedDay.add(Calendar.DAY_OF_MONTH, -1);
+            loadFromStorage();
+        });
+
+        btnNext.setOnClickListener(v -> {
+            selectedDay.add(Calendar.DAY_OF_MONTH, 1);
+            loadFromStorage();
+        });
 
         toggleGroup.check(btnSchool.getId());
         dayToggleGroup.check(R.id.daySun);
@@ -113,7 +125,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
     }
 
     private void addAfterSchoolItem() {
-
         ScheduleEntry entry = new ScheduleEntry(
                 "id_" + System.currentTimeMillis(),
                 getDayKey(),
@@ -185,10 +196,6 @@ public class WeeklyScheduleActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         updateEmptyState();
         updateTitle();
-    }
-
-    private void saveAllData() {
-        store.saveAll(store.loadAll());
     }
 
     private void updateEmptyState() {

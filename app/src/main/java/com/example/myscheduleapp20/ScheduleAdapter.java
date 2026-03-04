@@ -1,6 +1,5 @@
 package com.example.myscheduleapp20;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,34 +33,39 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
     public VH onCreateViewHolder(@NonNull ViewGroup parent,
                                  int viewType) {
 
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_schedule, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_schedule, parent, false); // ✅ תיקון כאן
 
-        return new VH(v);
+        return new VH(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH h,
+    public void onBindViewHolder(@NonNull VH holder,
                                  int position) {
 
         ScheduleItem item = items.get(position);
 
-        h.txtTitle.setText(item.getTitle());
-        h.txtTime.setText(item.getDisplayTime());
-        h.txtDetails.setText(item.getDetails());
+        holder.txtTitle.setText(item.getTitle());
+        holder.txtTime.setText(item.getDisplayTime());
+        holder.txtDetails.setText(item.getDetails());
 
-        h.itemView.setOnClickListener(
-                v -> listener.onClick(item));
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onClick(item);
+            }
+        });
 
-        h.itemView.setOnLongClickListener(v -> {
-            listener.onLongClick(item);
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener != null) {
+                listener.onLongClick(item);
+            }
             return true;
         });
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return items != null ? items.size() : 0;
     }
 
     static class VH extends RecyclerView.ViewHolder {
@@ -73,14 +77,9 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.VH> {
         VH(@NonNull View itemView) {
             super(itemView);
 
-            txtTitle =
-                    itemView.findViewById(R.id.txtTitle);
-
-            txtTime =
-                    itemView.findViewById(R.id.txtTime);
-
-            txtDetails =
-                    itemView.findViewById(R.id.txtDetails);
+            txtTitle = itemView.findViewById(R.id.txtTitle);
+            txtTime = itemView.findViewById(R.id.txtTime);
+            txtDetails = itemView.findViewById(R.id.txtDetails);
         }
     }
 }

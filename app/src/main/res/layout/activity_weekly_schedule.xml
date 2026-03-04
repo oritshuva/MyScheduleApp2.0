@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,122 +12,158 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <!-- בחירת יום בשבוע -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/btnPrevDay"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_media_previous"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="יום קודם"/>
+
+            <TextView
+                android:id="@+id/tvDayTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="יום ראשון"/>
+
+            <ImageButton
+                android:id="@+id/btnNextDay"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_media_next"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="יום הבא"/>
+        </LinearLayout>
+
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/dayToggleGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:singleSelection="true"
-            app:selectionRequired="true">
+            app:selectionRequired="true"
+            app:checkedButton="@+id/daySun">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/daySun"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="א׳" />
+                android:padding="0dp"
+                android:text="א׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dayMon"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ב׳" />
+                android:padding="0dp"
+                android:text="ב׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dayTue"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ג׳" />
+                android:padding="0dp"
+                android:text="ג׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dayWed"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ד׳" />
+                android:padding="0dp"
+                android:text="ד׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dayThu"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ה׳" />
+                android:padding="0dp"
+                android:text="ה׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dayFri"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ו׳" />
+                android:padding="0dp"
+                android:text="ו׳"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/daySat"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="ש׳" />
+                android:padding="0dp"
+                android:text="ש׳"/>
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <!-- כותרת -->
-        <TextView
-            android:id="@+id/tvDayTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <!-- לימודים / אחרי בית ספר -->
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/toggleGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:gravity="center"
             app:singleSelection="true"
-            app:selectionRequired="true">
+            app:selectionRequired="true"
+            app:checkedButton="@+id/btnSchool">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSchool"
-                android:layout_width="0dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="לימודים" />
+                android:text="לימודים"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAfterSchool"
-                android:layout_width="0dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="אחרי בית ספר" />
+                android:text="אחרי בית ספר"/>
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEditMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="ערוך מערכת" />
 
         <TextView
             android:id="@+id/tvEmpty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="20dp"
             android:gravity="center"
             android:text="אין פריטים ליום הזה"
-            android:visibility="gone" />
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvWeekly"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="12dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@android:layout/simple_list_item_1"/>
 
     </LinearLayout>
 
@@ -134,8 +172,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_margin="24dp"
         android:contentDescription="הוסף פריט"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:srcCompat="@android:drawable/ic_input_add"/>
 
 </FrameLayout>

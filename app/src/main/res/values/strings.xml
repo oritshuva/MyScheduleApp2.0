@@ -6,5 +6,7 @@
     <string name="tab_regular_day">יום רגיל</string>
     <string name="tab_after_school">אחרי בית ספר</string>
     <string name="add_task">הוספת משימה</string>
+    <string name="desc_note">הערה</string>
+    <string name="desc_reminder">תזכורת</string>
 
 </resources>

@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {     // הגדרת מסך 
                     .addOnCompleteListener(task -> {              // מה לעשות כשהפעולה מסתיימת
                         if (task.isSuccessful()) {                // אם התחבר בהצלחה
                             Toast.makeText(this, "התחברת ✅", Toast.LENGTH_SHORT).show(); // הודעה
-                            startActivity(new Intent(LoginActivity.this, ScheduleActivity.class));
+                            startActivity(new Intent(LoginActivity.this, WeeklyScheduleActivity.class));
                             finish();                             // סוגר Login
                         } else {                                  // אם נכשל
                             String msg = (task.getException() != null)
