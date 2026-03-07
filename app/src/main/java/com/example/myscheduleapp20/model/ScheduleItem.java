@@ -4,54 +4,53 @@ import com.google.firebase.firestore.Exclude;
 
 public class ScheduleItem {
     private String id;
-    private String title;
-    private String displayTime;
-    private String details;
-    private long time;
-    private int alarmId;
+    private String userId;
+    private String day;
     private String scheduleType;
+    private int periodNumber;
+    private String subjectName;
+    private String startTime;
+    private String endTime;
+    private String note;
+    private int alarmHour;
+    private int alarmMinute;
+    private long alarmTime;
+    private int alarmId;
 
-    // חובה עבור Firebase
-    public ScheduleItem() {}
+    public ScheduleItem() {} // חובה עבור Firebase
 
-    public ScheduleItem(String title, String displayTime, String details, long time, int alarmId, String scheduleType) {
-        this.title = title;
-        this.displayTime = displayTime;
-        this.details = details;
-        this.time = time;
-        this.alarmId = alarmId;
+    public ScheduleItem(String userId, String day, String scheduleType, int periodNumber,
+                        String subjectName, String startTime, String endTime, String note,
+                        int alarmHour, int alarmMinute, long alarmTime, int alarmId) {
+        this.userId = userId;
+        this.day = day;
         this.scheduleType = scheduleType;
+        this.periodNumber = periodNumber;
+        this.subjectName = subjectName;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.note = note;
+        this.alarmHour = alarmHour;
+        this.alarmMinute = alarmMinute;
+        this.alarmTime = alarmTime;
+        this.alarmId = alarmId;
     }
+
+    // Getters
+    public String getUserId() { return userId; }
+    public String getDay() { return day; }
+    public String getScheduleType() { return scheduleType; }
+    public int getPeriodNumber() { return periodNumber; }
+    public String getSubjectName() { return subjectName; }
+    public String getStartTime() { return startTime; }
+    public String getEndTime() { return endTime; }
+    public String getNote() { return note != null ? note : ""; }
+    public int getAlarmHour() { return alarmHour; }
+    public int getAlarmMinute() { return alarmMinute; }
+    public long getAlarmTime() { return alarmTime; }
+    public int getAlarmId() { return alarmId; }
 
     @Exclude
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDisplayTime() { return displayTime; }
-    public void setDisplayTime(String displayTime) { this.displayTime = displayTime; }
-
-    public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
-
-    public long getTime() { return time; }
-    public void setTime(long time) { this.time = time; }
-
-    // לשימוש נוח אם חלק מהקוד קורא בשם הזה
-    @Exclude
-    public long getTimeMillis() { return time; }
-    public void setTimeMillis(long time) { this.time = time; }
-
-    public int getAlarmId() { return alarmId; }
-    public void setAlarmId(int alarmId) { this.alarmId = alarmId; }
-
-    public String getScheduleType() { return scheduleType; }
-    public void setScheduleType(String scheduleType) { this.scheduleType = scheduleType; }
-
-    @Exclude
-    public boolean isPast() {
-        return System.currentTimeMillis() > this.time;
-    }
 }

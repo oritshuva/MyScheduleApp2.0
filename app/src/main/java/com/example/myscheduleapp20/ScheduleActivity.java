@@ -2,133 +2,91 @@ package com.example.myscheduleapp20;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
-
-    private ViewPager2 viewPager;
     private TabLayout tabLayout;
-    private FloatingActionButton fabAddTask;
+    private ViewPager2 viewPager;
+
+    private ImageButton btnLogout;
+
+    private TextView tvUserGreeting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
 
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (mAuth.getCurrentUser() == null) {
-            finish();
+        if (user == null) {
+
+            Intent intent = new Intent(this, LoginActivity.class);
+
+            intent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
+            startActivity(intent);
             return;
         }
 
-        // Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // ViewPager + Tabs
-        viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
-        fabAddTask = findViewById(R.id.fabAddTask);
+        viewPager = findViewById(R.id.viewPager);
 
-        SchedulePagerAdapter pagerAdapter = new SchedulePagerAdapter(this);
-        viewPager.setAdapter(pagerAdapter);
+        btnLogout = findViewById(R.id.btnLogout);
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            if (position == 0) {
-                tab.setText("רגיל");
-            } else {
-                tab.setText("אחרי בית ספר");
-            }
-        }).attach();
+        tvUserGreeting = findViewById(R.id.tvUserGreeting);
 
-        // FAB (+) - פותח מסך הוספה לפי הטאב הנוכחי
-        fabAddTask.setOnClickListener(v -> {
-            Intent intent = new Intent(ScheduleActivity.this, AddScheduleItemActivity.class);
+        if (user.getEmail() != null) {
+            tvUserGreeting.setText("שלום " + user.getEmail());
+        }
 
-            String currentType = (viewPager.getCurrentItem() == 0) ? "רגיל" : "אחרי בית ספר";
-            intent.putExtra("scheduleType", currentType);
+        SchedulePagerAdapter adapter = new SchedulePagerAdapter(this);
 
-            startActivity(intent);
-        });
+        viewPager.setAdapter(adapter);
 
-        // נתוני דמו (רק אם אין בכלל משימות)
-        checkAndCreateDefaultSchedule();
-    }
+        new TabLayoutMediator(
+                tabLayout,
+                viewPager,
+                (tab, position) -> {
 
-    // ===== תפריט עליון (כולל התנתקות) =====
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_schedule, menu);
-        return true;
-    }
+                    if (position == 0) {
+                        tab.setText("מערכת שעות");
+                    } else {
+                        tab.setText("משימות");
+                    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_logout) {
+                }
+        ).attach();
+
+        btnLogout.setOnClickListener(v -> {
+
             FirebaseAuth.getInstance().signOut();
 
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Intent intent = new Intent(
+                    ScheduleActivity.this,
+                    LoginActivity.class
+            );
+
+            intent.setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
             startActivity(intent);
 
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void checkAndCreateDefaultSchedule() {
-        String uid = mAuth.getUid();
-        if (uid == null) return;
-
-        db.collection("tasks")
-                .document(uid)
-                .collection("userTasks")
-                .limit(1)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        createDefaultItem("מתמטיקה", "08:15", "חדר 204", "רגיל");
-                        createDefaultItem("אנגלית", "10:00", "מבחן", "רגיל");
-                        createDefaultItem("אימון כדורגל", "17:00", "מגרש", "אחרי בית ספר");
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "שגיאה בבדיקת נתונים ראשוניים", Toast.LENGTH_SHORT).show()
-                );
-    }
-
-    private void createDefaultItem(String title, String timeStr, String details, String type) {
-        String uid = mAuth.getUid();
-        if (uid == null) return;
-
-        long now = System.currentTimeMillis();
-        int alarmId = (int) (now % Integer.MAX_VALUE);
-
-        // שים לב: אם ScheduleItem אצלך נמצא ב-package אחר (model), עדכן את השורה הזאת
-        com.example.myscheduleapp20.model.ScheduleItem item =
-                new com.example.myscheduleapp20.model.ScheduleItem(title, timeStr, details, now, alarmId, type);
-
-        db.collection("tasks")
-                .document(uid)
-                .collection("userTasks")
-                .add(item);
+        });
     }
 }

@@ -1,22 +1,22 @@
 package com.example.myscheduleapp20;                       // אותה חבילה כמו MainActivity
 
 import android.content.Intent;
-import android.os.Bundle; // מאפשר לקבל מצב בעת פתיחת Activity
-import android.text.Editable; // טיפוס שמשמש את TextWatcher
-import android.text.TextWatcher; // מאזין לשינויים בשדות טקסט
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Patterns; // תבניות מוכנות (כמו אימייל)
-import android.view.View; // שליטה בנראות רכיבים
-import android.widget.ProgressBar; // אינדיקציית טעינה
-import android.widget.TextView; // טקסט לחיץ (חזרה ללוגין)
-import android.widget.Toast; // הודעות קצרות למשתמש
+import android.util.Patterns;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity; // מחלקת בסיס ל-Activity
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.button.MaterialButton; // כפתור Material
-import com.google.android.material.textfield.TextInputEditText; // שדה טקסט Material
-import com.google.android.material.textfield.TextInputLayout; // מעטפת שמאפשרת error
-import com.google.firebase.auth.FirebaseAuth; // Firebase Auth לרישום משתמש
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity { // Activity של ההרשמה
 

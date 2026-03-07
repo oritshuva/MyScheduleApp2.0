@@ -1,68 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
-    android:orientation="horizontal"
-    android:padding="8dp"
-    android:background="@drawable/bg_schedule_item">
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
 
-    <!-- עיגול סטטוס -->
-    <View
-        android:id="@+id/viewStatus"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/bg_status_circle"/>
-
-    <!-- טקסטים -->
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/txtTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+        <!-- עיגול סטטוס -->
+        <View
+            android:id="@+id/statusCircle"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/circle_gray"/>
 
-        <TextView
-            android:id="@+id/txtTime"
-            android:layout_width="wrap_content"
+        <!-- טקסטים -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="14sp"/>
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/txtDetails"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"/>
+            <TextView
+                android:id="@+id/tvSubject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="מקצוע"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="08:00 - 08:45"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="הערה"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+        <!-- כפתור מחיקה -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="delete"/>
+
     </LinearLayout>
 
-    <!-- פעמון -->
-    <ImageButton
-        android:id="@+id/btnReminder"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_lock_idle_alarm"
-        android:contentDescription="@string/desc_reminder"
-        android:padding="12dp"/>
-
-    <ImageButton
-        android:id="@+id/btnNote"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_edit"
-        android:contentDescription="@string/desc_note"
-        android:padding="12dp"/>
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

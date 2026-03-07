@@ -1,9 +1,9 @@
 package com.example.myscheduleapp20;
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,61 +16,61 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.VH> {
 
-    private final List<Task> taskList;
+    private final List<Task> tasks;
 
-    public TaskAdapter(List<Task> taskList) {
-        this.taskList = taskList;
+    public TaskAdapter(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     @NonNull
     @Override
-    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_task, parent, false);
-        return new TaskViewHolder(view);
+        return new VH(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VH holder, int position) {
 
-        Task task = taskList.get(position);
+        Task task = tasks.get(position);
+
+        holder.radioDone.setOnCheckedChangeListener(null);
 
         holder.txtTitle.setText(task.getTitle());
-        holder.txtDetails.setText(task.getDetails());
 
-        SimpleDateFormat sdf =
-                new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat fmt =
+                new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
 
         holder.txtTime.setText(
-                sdf.format(new Date(task.getTimeInMillis()))
+                fmt.format(new Date(task.getAlarmTime()))
         );
 
-        // במקום עיגול – נשנה צבע כותרת אם עבר הזמן
-        if (task.isPast()) {
-            holder.txtTitle.setTextColor(Color.GREEN);
-        } else {
-            holder.txtTitle.setTextColor(Color.BLACK);
-        }
+        holder.radioDone.setChecked(task.isDone());
+
+        holder.radioDone.setOnCheckedChangeListener((btn, checked) -> {
+            task.setDone(checked);
+            holder.txtTitle.setAlpha(checked ? 0.5f : 1f);
+        });
     }
 
     @Override
     public int getItemCount() {
-        return taskList.size();
+        return tasks.size();
     }
 
-    static class TaskViewHolder extends RecyclerView.ViewHolder {
+    static class VH extends RecyclerView.ViewHolder {
 
+        RadioButton radioDone;
         TextView txtTitle;
-        TextView txtDetails;
         TextView txtTime;
 
-        public TaskViewHolder(@NonNull View itemView) {
+        VH(@NonNull View itemView) {
             super(itemView);
-
+            radioDone = itemView.findViewById(R.id.radioDone);
             txtTitle = itemView.findViewById(R.id.txtTitle);
-            txtDetails = itemView.findViewById(R.id.txtDetails);
             txtTime = itemView.findViewById(R.id.txtTime);
         }
     }

@@ -2,11 +2,42 @@
 <resources>
 
     <string name="app_name">MyScheduleApp2.0</string>
+
     <string name="schedule_title">מערכת השעות שלי</string>
+
     <string name="tab_regular_day">יום רגיל</string>
     <string name="tab_after_school">אחרי בית ספר</string>
+
     <string name="add_task">הוספת משימה</string>
+
     <string name="desc_note">הערה</string>
     <string name="desc_reminder">תזכורת</string>
+
+    <string name="prev_day">יום קודם</string>
+    <string name="next_day">יום הבא</string>
+
+    <string name="today_week">היום שעבר בשבוע</string>
+
+    <string name="set_periods">תקבע את כמות השיעורים</string>
+
+    <string name="icon_lesson">שיעור</string>
+    <string name="icon_alarm">תזכורת</string>
+    <string name="icon_edit">עריכה</string>
+
+    <string name="mark_done">סמן כהושלם</string>
+
+    <string name="sample_lesson">שיעור לדוגמה</string>
+
+    <string name="hint_task_title">שם המקצוע</string>
+
+    <string name="pick_date">בחר תאריך</string>
+    <string name="pick_time">בחר שעה</string>
+
+    <string name="save_task">שמור</string>
+
+    <string name="no_date_selected">לא נבחר זמן</string>
+
+    <string name="day_off">יום חופש</string>
+
 
 </resources>
