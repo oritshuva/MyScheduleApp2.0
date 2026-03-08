@@ -3,25 +3,41 @@ package com.example.myscheduleapp20.model;
 import com.google.firebase.firestore.Exclude;
 
 public class ScheduleItem {
+
     private String id;
     private String userId;
     private String day;
     private String scheduleType;
     private int periodNumber;
+
     private String subjectName;
     private String startTime;
     private String endTime;
     private String note;
-    private int alarmHour;
-    private int alarmMinute;
+
+    private int alarmHour;   // שדה חדש
+    private int alarmMinute; // שדה חדש
     private long alarmTime;
     private int alarmId;
 
-    public ScheduleItem() {} // חובה עבור Firebase
+    // חובה ל-Firebase
+    public ScheduleItem() {}
 
-    public ScheduleItem(String userId, String day, String scheduleType, int periodNumber,
-                        String subjectName, String startTime, String endTime, String note,
-                        int alarmHour, int alarmMinute, long alarmTime, int alarmId) {
+    // constructor מעודכן - מקבל בדיוק את מה שה-Activity שולח
+    public ScheduleItem(
+            String userId,
+            String day,
+            String scheduleType,
+            int periodNumber,
+            String subjectName,
+            String startTime,
+            String endTime,
+            String note,
+            int alarmHour,   // נוסף
+            int alarmMinute, // נוסף
+            long alarmTime,
+            int alarmId
+    ) {
         this.userId = userId;
         this.day = day;
         this.scheduleType = scheduleType;

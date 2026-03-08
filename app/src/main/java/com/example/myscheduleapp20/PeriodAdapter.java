@@ -21,9 +21,11 @@ public class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.VH> {
     @NonNull
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_period, parent, false);
-        return new VH(v);
+
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_schedule, parent, false);
+
+        return new VH(view);
     }
 
     @Override
@@ -31,8 +33,15 @@ public class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.VH> {
 
         ScheduleEntry entry = items.get(position);
 
-        holder.tvTime.setText(entry.details);
-        holder.tvSubject.setText(entry.title);
+        holder.period.setText(String.valueOf(position + 1));
+
+        holder.subject.setText(
+                entry.title == null || entry.title.isEmpty()
+                        ? "לחץ להוסיף שיעור"
+                        : entry.title
+        );
+
+        holder.time.setText(entry.details);
     }
 
     @Override
@@ -42,13 +51,16 @@ public class PeriodAdapter extends RecyclerView.Adapter<PeriodAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
 
-        TextView tvTime;
-        TextView tvSubject;
+        TextView period;
+        TextView subject;
+        TextView time;
 
-        VH(@NonNull View itemView) {
+        VH(View itemView) {
             super(itemView);
-            tvTime = itemView.findViewById(R.id.tvTime);
-            tvSubject = itemView.findViewById(R.id.tvSubject);
+
+            period = itemView.findViewById(R.id.tvPeriod);
+            subject = itemView.findViewById(R.id.tvSubject);
+            time = itemView.findViewById(R.id.tvTime);
         }
     }
 }

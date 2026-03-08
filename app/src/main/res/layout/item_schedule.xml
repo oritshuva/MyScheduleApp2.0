@@ -1,65 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_height="70dp"
+    android:orientation="horizontal"
+    android:padding="10dp"
+    android:gravity="center_vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <View
+        android:id="@+id/viewStatus"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/circle_gray"/>
+
+    <TextView
+        android:id="@+id/tvPeriod"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:textStyle="bold"
+        android:text="1"/>
 
-        <!-- עיגול סטטוס -->
-        <View
-            android:id="@+id/statusCircle"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginEnd="12dp"
-            android:background="@drawable/circle_gray"/>
+    <TextView
+        android:id="@+id/tvSubject"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="מתמטיקה"/>
 
-        <!-- טקסטים -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="08:00-08:45"/>
 
-            <TextView
-                android:id="@+id/tvSubject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="מקצוע"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08:00 - 08:45"
-                android:textSize="14sp"/>
-
-            <TextView
-                android:id="@+id/tvNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="הערה"
-                android:textSize="12sp"/>
-        </LinearLayout>
-
-        <!-- כפתור מחיקה -->
-        <ImageButton
-            android:id="@+id/btnDelete"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?android:selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="delete"/>
-
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

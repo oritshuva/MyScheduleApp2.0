@@ -1,118 +1,88 @@
 package com.example.myscheduleapp20;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.myscheduleapp20.model.ScheduleItem;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder> {
+public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHolder>{
 
-    private Context context;
     private List<ScheduleItem> items;
+    private Context context;
+    private OnItemClickListener listener;
 
-    public ScheduleAdapter(Context context, List<ScheduleItem> items) {
-        this.context = context;
-        this.items = items;
+    // Interface חדש לטיפול בלחיצות
+    public interface OnItemClickListener {
+        void onItemLongClick(ScheduleItem item);
     }
 
-    @NonNull
+    public ScheduleAdapter(List<ScheduleItem> items, Context context, OnItemClickListener listener){
+        this.items = items;
+        this.context = context;
+        this.listener = listener;
+    }
+
     @Override
-    public ViewHolder onCreateViewHolder(
-            @NonNull ViewGroup parent,
-            int viewType) {
-
-        View view = LayoutInflater.from(context)
-                .inflate(R.layout.item_schedule, parent, false);
-
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        View view = LayoutInflater.from(context).inflate(R.layout.item_schedule, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(
-            @NonNull ViewHolder holder,
-            int position) {
-
+    public void onBindViewHolder(ViewHolder holder, int position){
         ScheduleItem item = items.get(position);
 
-        holder.tvSubject.setText(item.getSubjectName());
+        holder.period.setText(String.valueOf(item.getPeriodNumber()));
+        holder.subject.setText(item.getSubjectName());
+        holder.time.setText(item.getStartTime() + " - " + item.getEndTime());
 
-        holder.tvTime.setText(
-                item.getStartTime() + " - " + item.getEndTime()
-        );
+        // לוגיקת צבע העיגול (לפי המסמך)
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        if(item.getEndTime() != null && item.getEndTime().compareTo(currentTime) < 0){
+            holder.status.setBackgroundResource(R.drawable.circle_green);
+        } else {
+            holder.status.setBackgroundResource(R.drawable.circle_gray);
+        }
 
-        holder.tvNote.setText(item.getNote());
+        // לחיצה רגילה - מציג את ההערה (Image 15-16 במסמך)
+        holder.itemView.setOnClickListener(v -> {
+            String note = (item.getNote() != null && !item.getNote().isEmpty()) ? item.getNote() : "אין הערות לשיעור זה";
+            new AlertDialog.Builder(context)
+                    .setTitle("הערה לשיעור " + item.getSubjectName())
+                    .setMessage(note)
+                    .setPositiveButton("סגור", null)
+                    .show();
+        });
 
-        holder.btnDelete.setOnClickListener(v -> confirmDelete(item, position));
-    }
-
-    private void confirmDelete(ScheduleItem item, int position) {
-
-        new AlertDialog.Builder(context)
-                .setTitle("מחיקת שיעור")
-                .setMessage("האם למחוק את השיעור?")
-                .setPositiveButton("כן", (dialog, which) -> deleteItem(item, position))
-                .setNegativeButton("ביטול", null)
-                .show();
-    }
-
-    private void deleteItem(ScheduleItem item, int position) {
-
-        String uid = FirebaseAuth.getInstance().getUid();
-
-        if (uid == null) return;
-
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .collection("scheduleItems")
-                .document(item.getId())
-                .delete()
-                .addOnSuccessListener(unused -> {
-
-                    items.remove(position);
-                    notifyItemRemoved(position);
-
-                    Toast.makeText(context, "השיעור נמחק", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(context, "שגיאה במחיקה", Toast.LENGTH_SHORT).show());
+        // לחיצה ארוכה - קורא לפונקציית המחיקה ב-Fragment
+        holder.itemView.setOnLongClickListener(v -> {
+            listener.onItemLongClick(item);
+            return true;
+        });
     }
 
     @Override
-    public int getItemCount() {
-        return items.size();
-    }
+    public int getItemCount(){ return items.size(); }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder{
+        TextView period, subject, time;
+        View status;
 
-        TextView tvSubject;
-        TextView tvTime;
-        TextView tvNote;
-
-        ImageButton btnDelete;
-
-        public ViewHolder(@NonNull View itemView) {
-
+        public ViewHolder(View itemView){
             super(itemView);
-
-            tvSubject = itemView.findViewById(R.id.tvSubject);
-            tvTime = itemView.findViewById(R.id.tvTime);
-            tvNote = itemView.findViewById(R.id.tvNote);
-
-            btnDelete = itemView.findViewById(R.id.btnDelete);
+            period = itemView.findViewById(R.id.tvPeriod);
+            subject = itemView.findViewById(R.id.tvSubject);
+            time = itemView.findViewById(R.id.tvTime);
+            status = itemView.findViewById(R.id.viewStatus);
         }
     }
 }
